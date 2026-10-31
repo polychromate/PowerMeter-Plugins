@@ -76,9 +76,17 @@ for dir in *.pmplugin; do
   STAGE=$(mktemp -d)
   cp -R "$dir" "$STAGE/"
   find "$STAGE" -name '.DS_Store' -delete
-  # 固定时间戳 + 排序入包：同样的源码产出同样的字节，哈希可复现；
+  # 时间戳必须固定，否则同样源码在不同时刻打出的包字节不同、哈希不可复现。
+  # 取该插件目录最后一次 git 提交时间：既确定（同一份源码 → 同一个值），
+  # 又有真实含义（解压看到的是这个插件最后的修改日期），不会出现莫名其妙的年份。
+  # 尚未提交过的目录（或是从 tarball 解出来的）退回一个显式占位值。
+  MTIME=$(git log -1 --format=%cd --date=format:%Y%m%d%H%M.%S -- "$dir" 2>/dev/null || true)
+  if [ -z "$MTIME" ]; then
+    MTIME=202001010000.00
+    echo "    提示：$dir 没有 git 提交记录，时间戳使用占位值 $MTIME"
+  fi
   # 用 zip 而不是 ditto，避免把 __MACOSX/._* 资源叉塞进包里
-  find "$STAGE" -exec touch -t 202001010000.00 {} +
+  find "$STAGE" -exec touch -t "$MTIME" {} +
   ( cd "$STAGE" && find "$dir" | LC_ALL=C sort | zip -q -X "$OLDPWD/$ARCHIVE" -@ )
   rm -rf "$STAGE"
 
