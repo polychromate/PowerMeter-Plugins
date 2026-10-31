@@ -63,8 +63,9 @@ PowerMeter-Plugins/
 ```
 
 每个插件单独打成一个 `<id>-<version>.pmplugin.zip`：只含它自己的
-`manifest.json` + `plugin.js`，没有 `__MACOSX` 之类资源叉；包内时间戳固定、
-文件按名排序，所以**同样的源码产出同样的字节**，SHA-256 可复现、可校验。
+`manifest.json` + `plugin.js`，没有 `__MACOSX` 之类资源叉；包内时间戳统一取
+**该插件目录最后一次 git 提交时间**、文件按名排序，所以**同样的源码产出同样的字节**，
+SHA-256 可复现、可校验，解压后看到的日期也就是这个插件最后改动的日期。
 
 脚本还会跑两轮检查：`tests/*.js` 里的无硬件分支回归，以及调用 PowerMeter 的
 `--plugin-self-test` 执行插件内的 `selfTest()`。
