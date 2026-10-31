@@ -24,9 +24,14 @@ done
 python3 - <<'PY'
 import hashlib
 import json
+import os
 from pathlib import Path
 
 root = Path(".")
+base_url = os.environ.get(
+    "POWERMETER_PLUGIN_BASE_URL",
+    "https://github.com/polychromate/PowerMeter-Plugins/releases/download",
+).rstrip("/")
 plugins = []
 for manifest_path in sorted(root.glob("*.pmplugin/manifest.json")):
     manifest = json.loads(manifest_path.read_text())
@@ -39,7 +44,7 @@ for manifest_path in sorted(root.glob("*.pmplugin/manifest.json")):
         "apiVersion": manifest["apiVersion"],
         "minimumAppVersion": manifest["minimumAppVersion"],
         "description": manifest.get("description", ""),
-        "url": str(archive),
+        "url": f'{base_url}/v{manifest["version"]}/{archive.name}',
         "sha256": digest,
     })
 
