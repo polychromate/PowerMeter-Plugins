@@ -117,5 +117,17 @@ POWERMETER_PLUGIN_DIR="$PWD" \
 `index.json` 只是**目录**，不是捆绑包：它列出每个插件的最新版本、兼容性、下载地址和
 哈希，用户按自己的设备只下其中一个 zip。
 
+### Releases 页面怎么读
+
+一个插件一个 Release，标签就是 `<slug>-v<version>`（`logitech-hidpp-v1.0.0`、
+`xinmeng-v1.0.0`、`vgn-24g-v1.0.0`），每个 Release 里只有它自己的 zip 和 `.sha256`。
+仓库里**没有**「整包下载」这种东西——按设备挑一个装就行。
+
+GitHub 的 `Latest` 徽标只能指向其中一个 Release，落在最近发过版的那个插件上，
+**不代表「仓库整体最新版本」**；要看某个插件是不是最新，看它自己的标签或 `index.json`。
+
+> 历史：早先的 `v1.0.0` 是「所有插件捆在一个 Release + 一个仓库级版本号」的旧做法，
+> 已于 2026-11 删除并拆成上面三个独立 Release，旧标签 `v1.0.0` 一并移除。
+
 插件版本与 App 版本各自独立：插件升级不需要重装 App；
 只有当插件声明的 `apiVersion` / `minimumAppVersion` 高于当前 App 时，才需要升级主程序。

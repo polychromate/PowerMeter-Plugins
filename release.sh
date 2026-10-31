@@ -105,9 +105,10 @@ run() {
 run git tag -a "$TAG" -m "${NAME} ${VERSION}"
 run git push origin main
 run git push origin "$TAG"
-# 每个插件各自发版，没有"仓库整体最新版本"这回事，所以不设置 Latest 标记
+# GitHub 的 Latest 只会指向某一个 Release，与"插件各自版本"并不对应；
+# 这里不干预，让它自动落在最近发布的那次上（= 最近有更新的插件）。
 run ~/bin/gh release create "$TAG" "$ARCHIVE" "$ARCHIVE.sha256" \
-  --title "${NAME} ${VERSION}" --notes "$NOTES" --latest=false
+  --title "${NAME} ${VERSION}" --notes "$NOTES"
 
 echo "==> 完成：${TAG}"
 if [ "$DRY" -eq 1 ]; then
