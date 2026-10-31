@@ -1,2 +1,3 @@
 releases/
+.build/
 .DS_Store

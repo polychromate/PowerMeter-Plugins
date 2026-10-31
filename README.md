@@ -13,10 +13,13 @@
 | --- | --- | --- | --- |
 | [罗技 HID++](LogitechHIDPP.pmplugin) | `com.powermeter.logitech-hidpp` | Unifying / Bolt 接收器下的罗技键鼠、蓝牙直连罗技外设 | HID++ 2.0：`0x1000` → `0x1004` → `0x1001`，自动探测 1–6 号槽位 |
 | [新盟 2.4G](XinmengHID.pmplugin) | `com.powermeter.xinmeng` | 新盟 A99 / M71 等 2.4G 接收器键盘（VID `0x3554`） | vendor Input Report `0x13`，过滤设备离线占位报文 |
+| [VGN 2.4G](VGN24G.pmplugin) | `com.powermeter.vgn-24g` | VGN S99 等 2.4G 接收器键盘（VID `0x320F` PID `0x5088`） | 厂商通道 Report 4 主动查询 `0x1A`，读电量与充电状态 |
 
 ## 安装
 
-1. 到 [Releases](../../releases) 下载对应插件的 zip（例如 `com.powermeter.xinmeng-1.0.0.pmplugin.zip`）。
+每个插件都是**独立的 zip**，按自己的设备下一个就够，不用装整套。
+
+1. 到 [Releases](../../releases) 下载对应那一个插件的 zip（例如 `com.powermeter.xinmeng-1.0.0.pmplugin.zip`）。
 2. 打开 PowerMeter 菜单面板 → **插件 › 安装插件…** → 选择该 zip。
 3. 安装后自动生效；同 id 覆盖安装即为升级。
 
@@ -39,28 +42,32 @@ PowerMeter-Plugins/
 ├── XinmengHID.pmplugin/
 │   ├── manifest.json
 │   └── plugin.js
-├── index.json          # 构建产物：插件索引（版本、兼容性、下载地址、SHA-256）
-├── build.sh            # 打包 zip、生成 sha256 与 index.json、跑插件自测
+├── VGN24G.pmplugin/
+│   ├── manifest.json
+│   └── plugin.js
+├── tests/              # 无硬件的分支回归脚本（node 跑）
+├── index.json          # 构建产物：插件目录（版本、兼容性、下载地址、SHA-256）
+├── build.sh            # 逐插件打包 zip、算 sha256、合并 index.json、跑自测
+├── release.sh          # 单插件发版：一个插件一个标签、一个 Release
+├── .build/             # 源码指纹缓存，用于跳过未改动的插件（不进 git）
 └── releases/           # 打包产物（不进 git）
 ```
 
 ## 构建与自测
 
 ```bash
-./build.sh
+./build.sh                 # 构建全部，源码没变的插件自动跳过
+./build.sh vgn             # 只构建 VGN 这个插件
+./build.sh --force vgn     # 强制重打（版本号没改但想刷新产物时用）
+./build.sh --list          # 列出插件与版本
 ```
 
-脚本会依次完成：校验每个插件的清单 → 打包 `.pmplugin.zip` → 计算 SHA-256 →
-生成 `index.json` → 调用 PowerMeter 的 `--plugin-self-test` 跑插件内的 `selfTest()`。
+每个插件单独打成一个 `<id>-<version>.pmplugin.zip`：只含它自己的
+`manifest.json` + `plugin.js`，没有 `__MACOSX` 之类资源叉；包内时间戳固定、
+文件按名排序，所以**同样的源码产出同样的字节**，SHA-256 可复现、可校验。
 
-产物在 `releases/`：
-
-```text
-com.powermeter.logitech-hidpp-1.0.0.pmplugin.zip
-com.powermeter.logitech-hidpp-1.0.0.pmplugin.zip.sha256
-com.powermeter.xinmeng-1.0.0.pmplugin.zip
-com.powermeter.xinmeng-1.0.0.pmplugin.zip.sha256
-```
+脚本还会跑两轮检查：`tests/*.js` 里的无硬件分支回归，以及调用 PowerMeter 的
+`--plugin-self-test` 执行插件内的 `selfTest()`。
 
 只跑自测、不打包：
 
@@ -91,10 +98,24 @@ POWERMETER_PLUGIN_DIR="$PWD" \
 
 ## 发布新版本
 
-1. 修改插件内的 `manifest.json` 版本号和 `plugin.js`。
-2. `./build.sh`，确认自测通过。
-3. 提交并打标签：`git tag -a v1.1.0 -m "插件 1.1.0" && git push origin main v1.1.0`。
-4. 在 GitHub Release 里上传 `releases/` 下的 zip 与 sha256，让 `index.json` 里的下载地址保持有效。
+版本、标签、Release 都**按插件独立**，互不影响：写一个新插件不需要重发别人的包。
+
+```bash
+# 1. 改这个插件的 manifest.json 版本号和 plugin.js
+# 2. 只打这一个插件，确认自测通过
+./build.sh vgn
+
+# 3. 发布：一个插件一个标签、一个 Release
+./release.sh vgn --dry-run   # 先看一眼要执行的命令
+./release.sh vgn
+```
+
+标签形如 `vgn-24g-v1.0.0`、`xinmeng-v1.1.0`，Release 里只挂这一个插件的 zip 与
+`.sha256`；`index.json` 里每个条目的 `url` 各自指向自己的标签。
+同版本重复发布会直接报错退出，提醒你先改版本号。
+
+`index.json` 只是**目录**，不是捆绑包：它列出每个插件的最新版本、兼容性、下载地址和
+哈希，用户按自己的设备只下其中一个 zip。
 
 插件版本与 App 版本各自独立：插件升级不需要重装 App；
 只有当插件声明的 `apiVersion` / `minimumAppVersion` 高于当前 App 时，才需要升级主程序。
