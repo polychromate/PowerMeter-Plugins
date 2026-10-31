@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "plugins": [
+    {
+      "id": "com.powermeter.logitech-hidpp",
+      "name": "罗技 HID++",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minimumAppVersion": "0.4.0",
+      "description": "通过 HID++ 2.0 读取罗技 Unifying / Bolt 接收器及蓝牙直连设备的电量与充电状态",
+      "url": "releases/com.powermeter.logitech-hidpp-1.0.0.pmplugin.zip",
+      "sha256": "71bc2a4e7a2231ed1e80251c3fb2f1dc87aaedc0820df401a4c668122dd82e9f"
+    },
+    {
+      "id": "com.powermeter.xinmeng",
+      "name": "新盟 2.4G",
+      "version": "1.0.0",
+      "apiVersion": 1,
+      "minimumAppVersion": "0.4.0",
+      "description": "监听新盟 A99 / M71 等 2.4G 接收器的私有 Input Report，过滤设备离线占位报文",
+      "url": "releases/com.powermeter.xinmeng-1.0.0.pmplugin.zip",
+      "sha256": "a13167d7206ade03157c1767a19fb5f8b05c213b99c1d423891d86bcea6885a6"
+    }
+  ]
+}

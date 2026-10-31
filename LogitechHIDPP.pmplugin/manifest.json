@@ -1,0 +1,11 @@
+{
+  "id": "com.powermeter.logitech-hidpp",
+  "name": "罗技 HID++",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minimumAppVersion": "0.4.0",
+  "entry": "plugin.js",
+  "author": "PowerMeter",
+  "description": "通过 HID++ 2.0 读取罗技 Unifying / Bolt 接收器及蓝牙直连设备的电量与充电状态",
+  "sourcePolicy": "preferPlugin"
+}

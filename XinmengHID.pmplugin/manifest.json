@@ -1,0 +1,11 @@
+{
+  "id": "com.powermeter.xinmeng",
+  "name": "新盟 2.4G",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "minimumAppVersion": "0.4.0",
+  "entry": "plugin.js",
+  "author": "PowerMeter",
+  "description": "监听新盟 A99 / M71 等 2.4G 接收器的私有 Input Report，过滤设备离线占位报文",
+  "sourcePolicy": "preferPlugin"
+}
