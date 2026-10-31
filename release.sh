@@ -105,8 +105,9 @@ run() {
 run git tag -a "$TAG" -m "${NAME} ${VERSION}"
 run git push origin main
 run git push origin "$TAG"
+# 每个插件各自发版，没有"仓库整体最新版本"这回事，所以不设置 Latest 标记
 run ~/bin/gh release create "$TAG" "$ARCHIVE" "$ARCHIVE.sha256" \
-  --title "${NAME} ${VERSION}" --notes "$NOTES"
+  --title "${NAME} ${VERSION}" --notes "$NOTES" --latest=false
 
 echo "==> 完成：${TAG}"
 if [ "$DRY" -eq 1 ]; then
